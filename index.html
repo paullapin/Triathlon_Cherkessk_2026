@@ -247,8 +247,9 @@ h1 em{font-style:normal;color:var(--tartan-hot)}
 }
 .lb-btn:hover{background:var(--tartan);border-color:var(--tartan)}
 .lb-btn:focus-visible{outline:2px solid var(--number);outline-offset:2px}
+/* поднят над штатным навбаром Photo Sphere Viewer (высота ~40px) */
 .lb-nav{
-  position:absolute;z-index:5;bottom:24px;left:50%;transform:translateX(-50%);
+  position:absolute;z-index:5;bottom:62px;left:50%;transform:translateX(-50%);
   display:flex;align-items:center;gap:14px;
   background:rgba(30,32,36,.85);backdrop-filter:blur(8px);
   border:1px solid var(--line);border-radius:99px;padding:7px 9px;
@@ -328,7 +329,7 @@ footer a:hover{color:var(--chalk)}
       <span>5 июля 2026</span><span class="sep">/</span>
       <span>Дети</span>
     </div>
-    <h1>Стартовый<br>городок<br><em>на 360°</em></h1>
+    <h1>Черкесск<br><em>на 360°</em></h1>
 
     <dl class="hero-meta">
       <div><dt>Панорам</dt><dd id="stat-count">2</dd></div>
@@ -398,7 +399,7 @@ footer a:hover{color:var(--chalk)}
     <h2>Снимем ваш<br>этап так же</h2>
     <p>Съёмка соревнований в 360°, монтаж тура и размещение галереи под ключ.</p>
     <div class="btn-row">
-      <a class="btn" href="mailto:hello@lapin-lab.ru?subject=360-съёмка спортивного мероприятия">Обсудить съёмку</a>
+      <a class="btn" href="mailto:standpoint@list.ru?subject=360-съёмка спортивного мероприятия">Обсудить съёмку</a>
       <a class="btn ghost" href="https://lapin-lab.ru" target="_blank" rel="noopener">Другие работы</a>
     </div>
   </div>
@@ -441,13 +442,15 @@ footer a:hover{color:var(--chalk)}
 {
   "imports": {
     "three": "https://cdn.jsdelivr.net/npm/three@0.166.1/build/three.module.js",
-    "@photo-sphere-viewer/core": "https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/core@5.7.3/index.module.js"
+    "@photo-sphere-viewer/core": "https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/core@5.7.3/index.module.js",
+    "@photo-sphere-viewer/autorotate-plugin": "https://cdn.jsdelivr.net/npm/@photo-sphere-viewer/autorotate-plugin@5.7.3/index.module.js"
   }
 }
 </script>
 
 <script type="module">
 import { Viewer } from '@photo-sphere-viewer/core';
+import { AutorotatePlugin } from '@photo-sphere-viewer/autorotate-plugin';
 
 /* =========================================================
    ДАННЫЕ ПАНОРАМ
@@ -458,6 +461,11 @@ import { Viewer } from '@photo-sphere-viewer/core';
    2. Сделайте превью-кроп ~640px шириной -> panoramas/thumb-XX.jpg
    3. Добавьте объект в массив ниже.
    tag: 'start' | 'team' | 'track'  — используется фильтрами
+
+   startYaw — угол, с которого открывается панорама, в градусах.
+   Шов склейки у Insta360 всегда на краю кадра, т.е. на 0°.
+   Поэтому стартовый угол ставим на противоположную сторону —
+   ближе к 180°, точное значение подобрано по центру сюжета.
    ========================================================= */
 const PANORAMAS = [
   {
@@ -468,7 +476,7 @@ const PANORAMAS = [
     sub:   'Стартовая арка · организаторы и волонтёры',
     tag:   'start',
     tagLabel: 'Старт',
-    yaw: 0.05
+    startYaw: 198
   },
   {
     id: 'p2',
@@ -478,7 +486,7 @@ const PANORAMAS = [
     sub:   'Судьи, тренеры, организаторы у финишной арки',
     tag:   'team',
     tagLabel: 'Команда',
-    yaw: 0.05
+    startYaw: 230
   }
 ];
 
@@ -493,32 +501,32 @@ if (PANORAMAS.length) {
   heroViewer = new Viewer({
     container: document.querySelector('#hero-pano'),
     panorama: PANORAMAS[0].src,
-    defaultYaw: 0.15,
-    defaultPitch: 0.02,
+    // стартуем напротив шва склейки
+    defaultYaw: `${PANORAMAS[0].startYaw}deg`,
+    defaultPitch: '2deg',
     defaultZoomLvl: 42,
     minFov: 32,
     maxFov: 88,
-    navbar: false,
-    mousewheel: false,
-    touchmoveTwoFingers: true,
+    navbar: ['autorotate', 'zoom', 'move', 'fullscreen'],
+    mousemove: true,
+    mousewheel: true,
+    mousewheelCtrlKey: true,   // колесо страницы скроллит, Ctrl+колесо зумит
+    touchmoveTwoFingers: false,
+    moveInertia: true,
     loadingTxt: '',
-    fisheye: false
+    keyboard: 'fullscreen',
+    plugins: [
+      [AutorotatePlugin, {
+        autorotateSpeed: '0.6rpm',
+        autostartDelay: 1500,
+        autostartOnIdle: !reduceMotion
+      }]
+    ]
   });
 
-  if (!reduceMotion) {
+  if (reduceMotion) {
     heroViewer.addEventListener('ready', () => {
-      let raf, running = true;
-      const spin = () => {
-        if (!running) return;
-        const p = heroViewer.getPosition();
-        heroViewer.rotate({ yaw: p.yaw + 0.00035, pitch: p.pitch });
-        raf = requestAnimationFrame(spin);
-      };
-      spin();
-      heroViewer.addEventListener('start-moving', () => { running = false; cancelAnimationFrame(raf); });
-      document.addEventListener('visibilitychange', () => {
-        if (document.hidden) { running = false; cancelAnimationFrame(raf); }
-      });
+      heroViewer.getPlugin(AutorotatePlugin)?.stop();
     }, { once: true });
   }
 }
@@ -595,21 +603,37 @@ function openLightbox(index) {
   lbLoading.classList.remove('hide');
   paintMeta();
 
+  const p = PANORAMAS[current];
+
   if (!lbViewer) {
     lbViewer = new Viewer({
       container: document.querySelector('#lb-pano'),
-      panorama: PANORAMAS[current].src,
-      defaultZoomLvl: 0,
+      panorama: p.src,
+      defaultYaw: `${p.startYaw}deg`,
+      defaultPitch: '0deg',
+      defaultZoomLvl: 30,
       minFov: 25,
       maxFov: 100,
-      navbar: ['zoom', 'move', 'fullscreen'],
+      navbar: ['autorotate', 'zoom', 'move', 'download', 'fullscreen'],
+      mousemove: true,
+      mousewheel: true,
+      moveInertia: true,
       loadingTxt: '',
-      keyboard: 'always'
+      keyboard: 'always',
+      plugins: [
+        [AutorotatePlugin, {
+          autorotateSpeed: '0.5rpm',
+          autostartDelay: 3000,
+          autostartOnIdle: false   // в лайтбоксе крутит только по кнопке
+        }]
+      ]
     });
     lbViewer.addEventListener('ready', () => lbLoading.classList.add('hide'), { once: true });
   } else {
-    lbViewer.setPanorama(PANORAMAS[current].src, { showLoader: false })
-      .then(() => lbLoading.classList.add('hide'));
+    lbViewer.setPanorama(p.src, {
+      showLoader: false,
+      position: { yaw: `${p.startYaw}deg`, pitch: '0deg' }
+    }).then(() => lbLoading.classList.add('hide'));
   }
   document.querySelector('#lb-close').focus();
 }
@@ -625,8 +649,11 @@ function step(dir) {
   current = (current + dir + PANORAMAS.length) % PANORAMAS.length;
   lbLoading.classList.remove('hide');
   paintMeta();
-  lbViewer.setPanorama(PANORAMAS[current].src, { showLoader: false })
-    .then(() => lbLoading.classList.add('hide'));
+  const p = PANORAMAS[current];
+  lbViewer.setPanorama(p.src, {
+    showLoader: false,
+    position: { yaw: `${p.startYaw}deg`, pitch: '0deg' }
+  }).then(() => lbLoading.classList.add('hide'));
 }
 
 function closeLightbox() {
