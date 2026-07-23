@@ -365,6 +365,18 @@ h1 em{font-style:normal;color:var(--tartan-hot)}
 }
 .cols h4{font-family:var(--display);font-weight:500;text-transform:uppercase;font-size:19px;letter-spacing:.03em;margin-bottom:9px}
 .cols p{font-size:14px;line-height:1.7;color:var(--chalk-dim)}
+.event-copy{max-width:64ch}
+.flag-ru{
+  display:inline-block;width:1.35em;height:.9em;vertical-align:-.12em;
+  border-radius:2px;overflow:hidden;box-shadow:0 0 0 1px rgba(0,0,0,.2);
+}
+.flag-ru+.flag-ru{margin-left:.12em}
+.flag-ru svg{display:block;width:100%;height:100%}
+.event-copy p{font-size:clamp(15px,1.9vw,17px);line-height:1.75;color:var(--chalk)}
+.event-copy p+p{margin-top:16px}
+.event-copy a{color:var(--tartan-hot);text-decoration:underline;text-underline-offset:3px;transition:color .18s}
+.event-copy a:hover{color:var(--chalk)}
+.event-copy a:focus-visible{outline:2px solid var(--number);outline-offset:2px}
 
 /* ---------- CTA ---------- */
 .cta .wrap{text-align:center}
@@ -471,23 +483,12 @@ footer a:hover{color:var(--chalk)}
 <!-- ================= ABOUT ================= -->
 <section class="strip" id="about">
   <div class="wrap">
-    <div class="sec-head"><h2>Как это снято</h2></div>
-    <div class="cols">
-      <div>
-        <div class="col-n">01 / Камера</div>
-        <h4>Одна точка — весь стадион</h4>
-        <p>Сферическая съёмка фиксирует 360° по горизонтали и 180° по вертикали. Один кадр вместо двадцати: попадает и арка, и трибуны, и разметка под ногами.</p>
-      </div>
-      <div>
-        <div class="col-n">02 / Просмотр</div>
-        <h4>Работает везде</h4>
-        <p>Мышью на компьютере, пальцем на телефоне. Крутите панораму в любую сторону, приближайте детали колесом с Ctrl или кнопками панели.</p>
-      </div>
-      <div>
-        <div class="col-n">03 / Партнёрам</div>
-        <h4>Брендинг виден целиком</h4>
-        <p>Флаги, арки, баннеры и растяжки остаются в кадре под любым углом. Спонсорское присутствие фиксируется полностью, а не выборочно.</p>
-      </div>
+    <div class="sec-head"><h2>Обзор мероприятия</h2></div>
+    <div class="event-copy">
+      <p>📸 Самые яркие кадры прямиком из Черкесска, где прошёл IX этап ЛИГА ТРИАТЛОНА. ДЕТИ! 🔥</p>
+      <p>🏁 Эмоции, скорость, первые победы и незабываемые моменты</p>
+      <p>📄 Протоколы IX этапа ЛИГА ТРИАТЛОНА. ДЕТИ: <a href="https://rustriathlon.ru/uploads/dee86e0e440196321a5bfb70b920a31e2ae7e1b5.pdf" target="_blank" rel="noopener">открыть PDF</a></p>
+      <p><span class="flag-ru" role="img" aria-label="Флаг России"><svg viewBox="0 0 9 6" preserveAspectRatio="none"><rect width="9" height="6" fill="#fff"/><rect y="2" width="9" height="2" fill="#0039A6"/><rect y="4" width="9" height="2" fill="#D52B1E"/></svg></span><span class="flag-ru" role="img" aria-label="Флаг России"><svg viewBox="0 0 9 6" preserveAspectRatio="none"><rect width="9" height="6" fill="#fff"/><rect y="2" width="9" height="2" fill="#0039A6"/><rect y="4" width="9" height="2" fill="#D52B1E"/></svg></span> IX этап ЛИГИ ТРИАТЛОНА. ДЕТИ прошёл при поддержке Российского спортивного фонда. Благодарим фонд за содействие в организации настоящего спортивного праздника для юных триатлетов 💙</p>
     </div>
   </div>
 </section>
@@ -497,7 +498,7 @@ footer a:hover{color:var(--chalk)}
 <!-- ================= CTA ================= -->
 <section class="cta" id="order">
   <div class="wrap">
-    <h2>Снимем ваш<br>этап так же</h2>
+    <h2>Снимем<br>так же</h2>
     <p>Съёмка соревнований в 360°, монтаж тура и размещение галереи под ключ.</p>
     <div class="btn-row">
       <a class="btn" href="https://t.me/LAPIN_LAB" target="_blank" rel="noopener">Обсудить съёмку</a>
@@ -622,8 +623,8 @@ const PHOTOS = [
   { src:'photos/photo-02.jpg', thumb:'photos/thumb-02.jpg', title:'Волонтёры на дистанции' },
   { src:'photos/photo-03.jpg', thumb:'photos/thumb-03.jpg', title:'Транзитная зона' },
   { src:'photos/photo-04.jpg', thumb:'photos/thumb-04.jpg', title:'Организаторы этапа' },
-  { src:'photos/photo-05.jpg', thumb:'photos/thumb-05.jpg', title:'Наставник и спортсменка' },
-  { src:'photos/photo-06.jpg', thumb:'photos/thumb-06.jpg', title:'Брифинг участников' },
+  { src:'photos/photo-05.jpg', thumb:'photos/thumb-05.jpg', title:'Стартовый брифинг' },
+  { src:'photos/photo-06.jpg', thumb:'photos/thumb-06.jpg', title:'Гости мероприятия' },
   { src:'photos/photo-07.jpg', thumb:'photos/thumb-07.jpg', title:'Судья на дистанции' },
   { src:'photos/photo-08.jpg', thumb:'photos/thumb-08.jpg', title:'Плавательный этап' },
   { src:'photos/photo-09.jpg', thumb:'photos/thumb-09.jpg', title:'На финише с медалями' },
